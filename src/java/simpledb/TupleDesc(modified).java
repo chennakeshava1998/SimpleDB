@@ -3,6 +3,8 @@ package simpledb;
 import java.io.Serializable;
 import java.util.*;
 
+import com.sun.glass.ui.CommonDialogs.Type;
+
 /**
  * TupleDesc describes the schema of a tuple.
  */
@@ -40,8 +42,18 @@ public class TupleDesc implements Serializable {
      *        An iterator which iterates over all the field TDItems
      *        that are included in this TupleDesc
      * */
-    public Iterator<TDItem> iterator() {
-        // some code goes here
+    public Iterator<TDItem> iterator() 
+    {  
+    	String type;
+    	for(int i=0;i<tdi.length;i++)
+    	{
+    		if(tdi[i].fieldType==INT_TYPE)
+        		type="INT_TYPE";
+        	else if(tdi[i].fieldType==STRING_TYPE)
+        		type="STRING_TYPE";
+    		System.printf("Field " + (i+1) + ": " + tdi[i].fieldName + type );
+    	}
+        // some code goes here : in progress
         return null;
     }
 
@@ -58,8 +70,19 @@ public class TupleDesc implements Serializable {
      *            array specifying the names of the fields. Note that names may
      *            be null.
      */
-    public TupleDesc(Type[] typeAr, String[] fieldAr) {
-        // some code goes here
+    public TupleDesc(Type[] typeAr, String[] fieldAr)
+    {
+    	if(typeAr.length>0)
+    	{
+    		TDItem[] tdi = new TDItem[typeAr.length];
+    		for(int i=0;i<typeAr.length;i++)
+    		{
+               tdi[i].TDItem(typeAr[i],fieldAr[i]);    		
+    		}
+    	}
+    	else
+    		printf("Cannot create a tuple schema with 0 fields");
+        // some code goes here : in progress
     }
 
     /**
@@ -70,17 +93,28 @@ public class TupleDesc implements Serializable {
      *            array specifying the number of and types of fields in this
      *            TupleDesc. It must contain at least one entry.
      */
-    public TupleDesc(Type[] typeAr) {
-        // some code goes here
+    public TupleDesc(Type[] typeAr)
+    {
+    	if(typeAr.length>0)
+    	{
+    		TDItem[] tdi = new TDItem[typeAr.length];
+    		for(int i=0;i<typeAr.length;i++)
+    		{
+    			tdi[i].TDItem(typeAr[i],null);
+    		}
+    	}
+    	else
+    		printf("Cannot create a tuple schema with 0 fields");
+        // some code goes here : in progress
     }
 
     /**
      * @return the number of fields in this TupleDesc
      */
-    public int numFields() {
-        // some code goes here
-        return 0;
-    }
+    public int numFields()
+    {
+        return tdi.length;
+    }//modified
 
     /**
      * Gets the (possibly null) field name of the ith field of this TupleDesc.
@@ -92,8 +126,17 @@ public class TupleDesc implements Serializable {
      *             if i is not a valid field reference.
      */
     public String getFieldName(int i) throws NoSuchElementException {
-        // some code goes here
+        try
+        {
+        	if(i>=0 && i<=tdi.length)
+              return tdi[i].fieldName;      	
+        }
+        catch(NoSuchElementException e)
+        {
+        	System.printf("No such index exists in the table");
+        }
         return null;
+        //some code goes here : in progress
     }
 
     /**
@@ -106,9 +149,19 @@ public class TupleDesc implements Serializable {
      * @throws NoSuchElementException
      *             if i is not a valid field reference.
      */
-    public Type getFieldType(int i) throws NoSuchElementException {
-        // some code goes here
+    public Type getFieldType(int i) throws NoSuchElementException
+    {
+    	 try
+         {
+         	if(i>=0 && i<=tdi.length)
+               return tdi[i].fieldType;      	
+         }
+         catch(NoSuchElementException e)
+         {
+         	System.printf("No such index exists in the table");
+         }
         return null;
+        // some code goes here : in progress
     }
 
     /**
@@ -120,18 +173,41 @@ public class TupleDesc implements Serializable {
      * @throws NoSuchElementException
      *             if no field with a matching name is found.
      */
-    public int fieldNameToIndex(String name) throws NoSuchElementException {
-        // some code goes here
-        return 0;
+    public int fieldNameToIndex(String name) throws NoSuchElementException
+    { 
+    	boolean flag=0;
+    	try
+    	{
+    		for(i=0;i<tdi.length;i++)
+    		{
+    			if(equals(name,tdi[i].fieldName))
+    			{
+    				flag=1;
+    				return i;
+    			}
+    		}
+    		if(flag==0)
+    			flag=2;
+    	}
+    	catch( NoSuchElementException e)
+    	  System.printf("No field with matching name found");
+        return -1;
+    	// some code goes here : in progress
     }
 
     /**
      * @return The size (in bytes) of tuples corresponding to this TupleDesc.
      *         Note that tuples from a given TupleDesc are of a fixed size.
      */
-    public int getSize() {
-        // some code goes here
-        return 0;
+    public int getSize() 
+    {
+    	int size=0;
+    	for(int i=0;i<tdi.length;i++)
+    	{
+    		size+= tdi[i].fieldType.getLen();
+    	}
+    	return size;
+        // some code goes here : in progress
     }
 
     /**
@@ -144,9 +220,24 @@ public class TupleDesc implements Serializable {
      *            The TupleDesc with the last fields of the TupleDesc
      * @return the new TupleDesc
      */
-    public static TupleDesc merge(TupleDesc td1, TupleDesc td2) {
-        // some code goes here
-        return null;
+    public static TupleDesc merge(TupleDesc td1, TupleDesc td2)
+    {
+    	int i;
+    	Type[] typeAr = new Type[td1.tdi.length +td2.tdi.length];
+    	String[] fieldAr = new String[td1.tdi.length +td2.tdi.length];
+    	for(i=0;i<td1.tdi.length;i++)
+    	{
+    		typeAr[i]=td1.tdi[i].fieldType;
+    		fieldAr[i]=td1.tdi[i].fieldName;
+    	}
+    	for(;i<td2.tdi.length;i++)
+    	{
+    		typeAr[i]=td2.tdi[i].fieldType;
+    		fieldAr[i]=td2.tdi[i].fieldName;
+    	}
+    	TupleDesc td =new TupleDesc(typeAr,fieldAr);
+    	return td;
+        // some code goes here : in progress
     }
 
     /**
@@ -158,8 +249,12 @@ public class TupleDesc implements Serializable {
      *            the Object to be compared for equality with this TupleDesc.
      * @return true if the object is equal to this TupleDesc.
      */
-    public boolean equals(Object o) {
-        // some code goes here
+    public boolean equals(Object o)
+    {
+    	
+    		
+    
+        // some code goes here : in progress
         return false;
     }
 
@@ -176,8 +271,19 @@ public class TupleDesc implements Serializable {
      * 
      * @return String describing this descriptor.
      */
-    public String toString() {
-        // some code goes here
-        return "";
+    public String toString() 
+    {
+        String descriptor="",type,index;
+        for(int i=0;i<tdi.length;i++)
+        {
+        	index=Integer.toString(i);
+        	if(tdi[i].fieldType==INT_TYPE)
+        		type="INT_TYPE";
+        	else if(tdi[i].fieldType==STRING_TYPE)
+        		type="STRING_TYPE";
+        	descriptor = descriptor + type + "[" + index + "](" + tdi[i].fieldName + "[" + index  + "]," ;
+        }
+        return descriptor;
+        //some code goes here : in progress
     }
 }
