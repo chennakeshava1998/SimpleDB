@@ -37,7 +37,7 @@ public class TupleDesc implements Serializable {
         }
     }
 
-    TDItem[] tdi;
+    public TDItem[] tdi;
     /**
      * @return
      *        An iterator which iterates over all the field TDItems
