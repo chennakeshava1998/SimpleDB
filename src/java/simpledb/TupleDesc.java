@@ -37,6 +37,7 @@ public class TupleDesc implements Serializable {
         }
     }
 
+    TDItem[] tdi;
     /**
      * @return
      *        An iterator which iterates over all the field TDItems
@@ -74,7 +75,7 @@ public class TupleDesc implements Serializable {
     {
     	if(typeAr.length>0)
     	{
-    		TDItem[] tdi = new TDItem[typeAr.length];
+            tdi=new TDItem[typeAr.length];
     		for(int i=0;i<typeAr.length;i++)
     		{
                tdi[i].TDItem(typeAr[i],fieldAr[i]);    		
@@ -97,7 +98,7 @@ public class TupleDesc implements Serializable {
     {
     	if(typeAr.length>0)
     	{
-    		TDItem[] tdi = new TDItem[typeAr.length];
+    		tdi = new TDItem[typeAr.length];
     		for(int i=0;i<typeAr.length;i++)
     		{
     			tdi[i].TDItem(typeAr[i],null);
