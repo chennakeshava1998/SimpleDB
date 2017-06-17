@@ -75,10 +75,10 @@ public class TupleDesc implements Serializable {
     {
     	if(typeAr.length>0)
     	{
-            tdi=new TDItem[typeAr.length];
+        	tdi=new TDItem[typeAr.length];
     		for(int i=0;i<typeAr.length;i++)
     		{
-               tdi[i].TDItem(typeAr[i],fieldAr[i]);    		
+        	       tdi[i].TDItem(typeAr[i],fieldAr[i]);    		
     		}
     	}
     	else
@@ -191,8 +191,8 @@ public class TupleDesc implements Serializable {
     			flag=2;
     	}
     	catch( NoSuchElementException e)
-		{
-    	  System.printf("No field with matching name found");
+	{
+    	 	 System.printf("No field with matching name found");
         }
 		return -1;
     	// some code goes here : in progress
