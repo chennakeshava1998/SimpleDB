@@ -32,6 +32,7 @@ class Table
     this.pkeyField = pkeyField;
     this.td = file.getTupleDesc();
   }
+}
 
 
 	/**
