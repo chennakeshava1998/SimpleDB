@@ -39,7 +39,7 @@ class Table
      * Creates a new, empty catalog.
      */
 	public ArrayList<Table> cat;    
-	Catalog() {
+	public Catalog() {
 	cat = new ArrayList<Table>();        
 	// a new list cat is created, it's of the type Table and contains these fields.
 	// I felt dealing with arrayList would be easier than with sql tables for storing this info.
@@ -197,7 +197,7 @@ class Table
     
     /** Delete all tables from the catalog */
     public void clear() {
-        cat.clear(); /* clear() is faster than removeAll().
+        cat.clear(); /* clear() is faster than removeAll(). */
     }
     
     /**
