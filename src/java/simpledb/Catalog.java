@@ -14,14 +14,37 @@ import java.util.*;
  * to a catalog that reads a catalog table from disk.
  */
 
+
+
+
 public class Catalog {
 
-    /**
+class Table
+{
+	public String name,pKeyField,DbFile;
+	public int tableID;
+	public TupleDesc td;
+  public DbFile db;
+  public Table(int tableID,String name,String pkeyField,DbFile file)
+  {
+    this.tableID = tableID;
+    this.name = name;
+    this.pkeyField = pkeyField;
+    this.td = file.getTupleDesc();
+  }
+
+
+	/**
      * Constructor.
      * Creates a new, empty catalog.
      */
-    public Catalog() {
-        // some code goes here
+	public ArrayList<Table> cat;    
+	Catalog() {
+	cat = new ArrayList<Table>();        
+	// a new list cat is created, it's of the type Table and contains these fields.
+	// I felt dealing with arrayList would be easier than with sql tables for storing this info.
+
+/* I chose ArrayList because it offers a constant time complexity for retreival of element, and the cases of adding new elements might be lesser than retrieval. Also, TreeSet could have been used but it does not provide random access */ 
     }
 
     /**
@@ -34,7 +57,12 @@ public class Catalog {
      * conflict exists, use the last table to be added as the table for a given name.
      */
     public void addTable(DbFile file, String name, String pkeyField) {
-        // some code goes here
+        // tableId is obtained by hashing the name of the table using the string.hashCode() method
+	    /* the order of details would be - tableID,table name,pKeyField,TupleDesc
+       * */
+      int tableID = name.hashCode();
+      Table t = new Table(tableID,name,pkeyField,file);
+      cat.add(t);
     }
 
     public void addTable(DbFile file, String name) {
@@ -57,7 +85,20 @@ public class Catalog {
      * @throws NoSuchElementException if the table doesn't exist
      */
     public int getTableId(String name) throws NoSuchElementException {
-        // some code goes here
+        
+      int flag = 0; //variable to break out of this for loop
+      for(int i=0;i<cat.size();i++)
+        {
+          if(cat.get(i).name==name)
+          {
+            System.out.println("TableID of " + name + " is " + cat.get(i).tableID);
+            flag=1;
+          }
+
+          if(flag) break;
+        }
+        
+      if(flag==0) System.out.println("No such file name exists");
         return 0;
     }
 
@@ -68,7 +109,20 @@ public class Catalog {
      * @throws NoSuchElementException if the table doesn't exist
      */
     public TupleDesc getTupleDesc(int tableid) throws NoSuchElementException {
-        // some code goes here
+	int flag = 0;	
+	for(int i = 0;i<cat.size();i++)
+	{
+		if(cat.get(i).tableID = tableID){
+		cat.get(i).td.toString();
+		flag=1;
+// td is an object of TupleDesc class declared as a member in the Table class.
+// also, toString is a function that performs this task in the TupleDesc class.
+		}
+		if (flag==1) break;
+	}
+	
+	if(flag==0) System.out.println("No such table exists");       
+	
         return null;
     }
 
@@ -79,28 +133,71 @@ public class Catalog {
      *     function passed to addTable
      */
     public DbFile getDbFile(int tableid) throws NoSuchElementException {
-        // some code goes here
+        int flag = 0; //variable to break out of this for loop
+        for(int i=0;i<cat.size();i++)
+        {
+          if(cat.get(i).tableID==tableid)
+          {
+            System.out.println("DbFile of table with TableID " + tableid + " is " + cat.get(i).file);
+            flag=1;
+          }
+
+          if(flag) break;
+        }
+        
+        if(flag==0) System.out.println("No table with such id exists");
+        
         return null;
     }
 
     public String getPrimaryKey(int tableid) {
-        // some code goes here
+        int flag = 0; //variable to break out of this for loop
+        for(int i=0;i<cat.size();i++)
+        {
+          if(cat.get(i).tableID==tableid)
+          {
+            System.out.println("Primary Field Value of table with TableID " + tableid + " is " + cat.get(i).pkeyField);
+            flag=1;
+          }
+
+          if(flag) break;
+        }
+        
+        if(flag==0) System.out.println("No table with such id exists");
         return null;
     }
 
     public Iterator<Integer> tableIdIterator() {
-        // some code goes here
+        for(int i=0;i<cat.size();i++)
+	{
+		for(int j=0;j<4;j++){
+		//some processing with the elements can be performed here.
+		// individual elements can be accessed as cat.get(i).approprite_member_name
+		}
+	}
         return null;
     }
 
     public String getTableName(int id) {
-        // some code goes here
+        int flag = 0; //variable to break out of this for loop
+        for(int i=0;i<cat.size();i++)
+        {
+          if(cat.get(i).tableID==tableid)
+          {
+            System.out.println("Table name of table with TableID " + tableid + " is " + cat.get(i).name);
+            flag=1;
+          }
+
+          if(flag) break;
+        }
+        
+        if(flag==0) System.out.println("No table with such id exists");
         return null;
     }
     
     /** Delete all tables from the catalog */
     public void clear() {
-        // some code goes here
+        cat.clear(); /* clear() is faster than removeAll().
     }
     
     /**
