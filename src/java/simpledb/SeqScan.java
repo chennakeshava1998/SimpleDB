@@ -27,8 +27,18 @@ public class SeqScan implements DbIterator {
      *            are, but the resulting name can be null.fieldName,
      *            tableAlias.null, or null.null).
      */
+    TransactionId tsid;
+    int tabid;
+    String tabalias;
+    DbFile dbf;
+    DbFileIterator dbfi;
     public SeqScan(TransactionId tid, int tableid, String tableAlias) {
         // some code goes here
+    	this.tsid = tid;
+    	this.tabid = tableid;
+    	this.tabalias = tableAlias;
+    	this.dbf = Database.getCatalog().getDbFile(tabid);
+    	this.dbfi = dbf.iterator(tsid);
     }
 
     /**
@@ -37,7 +47,7 @@ public class SeqScan implements DbIterator {
      *       be the actual name of the table in the catalog of the database
      * */
     public String getTableName() {
-        return null;
+        return Database.getCatalog().getTableName(tabid);
     }
     
     /**
@@ -46,7 +56,7 @@ public class SeqScan implements DbIterator {
     public String getAlias()
     {
         // some code goes here
-        return null;
+        return tabalias;
     }
 
     /**
@@ -63,6 +73,8 @@ public class SeqScan implements DbIterator {
      */
     public void reset(int tableid, String tableAlias) {
         // some code goes here
+    	this.tabid = tableid;
+    	this.tabalias = tableAlias;
     }
 
     public SeqScan(TransactionId tid, int tableid) {
@@ -71,6 +83,7 @@ public class SeqScan implements DbIterator {
 
     public void open() throws DbException, TransactionAbortedException {
         // some code goes here
+    	dbfi.open();
     }
 
     /**
@@ -84,26 +97,47 @@ public class SeqScan implements DbIterator {
      */
     public TupleDesc getTupleDesc() {
         // some code goes here
-        return null;
+    	TupleDesc fd = dbf.getTupleDesc();
+    	int length = fd.numFields();
+    	Type[] t = new Type[length];
+    	String[] names = new String[length];
+    	for(int i = 0; i < length; i++){
+    		t[i] = fd.getFieldType(i);
+    		names[i] = tabalias + "." + fd.getFieldName(i);
+    	}
+        return new TupleDesc(t, names);
     }
 
     public boolean hasNext() throws TransactionAbortedException, DbException {
-        // some code goes here
-        return false;
+		// some code goes here
+    	if(dbfi==null){
+    		return false;
+    	}
+        return dbfi.hasNext();
     }
 
     public Tuple next() throws NoSuchElementException,
             TransactionAbortedException, DbException {
         // some code goes here
-        return null;
+    	if(dbfi==null){
+    		throw new NoSuchElementException("tuple is null");
+    	}
+    	Tuple tn = dbfi.next();
+    	if(tn != null){
+    		return tn;
+    	}
+    	else
+    		throw new NoSuchElementException("No next tuple");
     }
 
     public void close() {
         // some code goes here
+    	dbfi.close();
     }
 
     public void rewind() throws DbException, NoSuchElementException,
             TransactionAbortedException {
         // some code goes here
+    	dbfi.rewind();
     }
 }
