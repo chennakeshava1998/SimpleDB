@@ -13,7 +13,8 @@ import java.util.*;
  * @see simpledb.HeapPage#HeapPage
  * @author Sam Madden
  */
-public class HeapFile implements DbFile {
+public class HeapFile implements DbFile 
+{
 
     /**
      * Constructs a heap file backed by the specified file.
@@ -22,19 +23,26 @@ public class HeapFile implements DbFile {
      *            the file that stores the on-disk backing store for this heap
      *            file.
      */
-    public HeapFile(File f, TupleDesc td) {
-        // some code goes here
-    }
+	private File file;
+	private int Id = 0;
+	private TupleDesc tup_d;
+    
+	public HeapFile(File f, TupleDesc td) 
+	{
+	    this.file = f;
+            this.Id = f.getAbsoluteFile().hashCode();
+            this.tup_d = td;
+	}
 
     /**
      * Returns the File backing this HeapFile on disk.
      * 
      * @return the File backing this HeapFile on disk.
      */
-    public File getFile() {
-        // some code goes here
-        return null;
-    }
+  	public File getFile() 
+	{       	
+	   return this.file;
+        }
 
     /**
      * Returns an ID uniquely identifying this HeapFile. Implementation note:
@@ -46,8 +54,10 @@ public class HeapFile implements DbFile {
      * @return an ID uniquely identifying this HeapFile.
      */
     public int getId() {
-        // some code goes here
-        throw new UnsupportedOperationException("implement this");
+	if(Id!=0)
+	return this.Id;
+	else
+        throw new UnsupportedOperationException("Error in getting Id.");
     }
 
     /**
@@ -56,14 +66,35 @@ public class HeapFile implements DbFile {
      * @return TupleDesc of this DbFile.
      */
     public TupleDesc getTupleDesc() {
-        // some code goes here
-        throw new UnsupportedOperationException("implement this");
+        if(tup_d!=null)
+	return tup_d;
+	else
+        throw new UnsupportedOperationException("Error in getting Tuple Descriptor.");
     }
 
     // see DbFile.java for javadocs
     public Page readPage(PageId pid) {
         // some code goes here
-        return null;
+      try {
+            RandomAccessFile f = new RandomAccessFile(this.file,"r");
+            int pos = BufferPool.PAGE_SIZE * pid.pageNumber();
+            byte[] Data = new byte[BufferPool.PAGE_SIZE];
+            if ((BufferPool.PAGE_SIZE + pos )> f.length()) {
+                System.err.println("Error: The Page index exceeds max size");
+                System.exit(1);
+            }
+            f.seek(pos);
+            f.readFully(Data);
+            f.close();
+            return new HeapPage((HeapPageId) pid, Data);
+        } catch (FileNotFoundException e) {
+            System.err.println("FileNotFoundException: " + e.getMessage());
+            throw new IllegalArgumentException();
+        } catch (IOException e) {
+            System.err.println("Caught IOException: " + e.getMessage());
+            throw new IllegalArgumentException();
+	}
+        
     }
 
     // see DbFile.java for javadocs
@@ -77,7 +108,7 @@ public class HeapFile implements DbFile {
      */
     public int numPages() {
         // some code goes here
-        return 0;
+       return (int) (file.length() / BufferPool.getPageSize());
     }
 
     // see DbFile.java for javadocs
@@ -97,10 +128,8 @@ public class HeapFile implements DbFile {
     }
 
     // see DbFile.java for javadocs
-    public DbFileIterator iterator(TransactionId tid) {
+   public DbFileIterator iterator(TransactionId tid) {
         // some code goes here
-        return null;
+        return new HeapFileIterator(this, tid);
     }
-
 }
-

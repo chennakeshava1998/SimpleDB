@@ -4,14 +4,15 @@ import java.util.*;
 import java.io.*;
 
 /**
- * Each instance of HeapPage stores data for one page of HeapFiles and 
- * implements the Page interface that is used by BufferPool.
+ *	 Each instance of HeapPage stores data for one page of HeapFiles and 
+ * 	 implements the Page interface that is used by BufferPool.
  *
  * @see HeapFile
  * @see BufferPool
  *
  */
-public class HeapPage implements Page {
+public class HeapPage implements Page 
+ {
 
     HeapPageId pid;
     TupleDesc td;
@@ -66,9 +67,9 @@ public class HeapPage implements Page {
     */
     private int getNumTuples() {        
         // some code goes here
-        return 0;
-
-    }
+	
+        return (int) Math.floor((BufferPool.getPageSize()*8) / (td.getSize() * 8 + 1));
+	}
 
     /**
      * Computes the number of bytes in the header of a page in a HeapFile with each tuple occupying tupleSize bytes
@@ -76,10 +77,8 @@ public class HeapPage implements Page {
      */
     private int getHeaderSize() {        
         
-        // some code goes here
-        return 0;
-                 
-    }
+        return (int) Math.ceil(((double) this.getNumTuples()) / 8);
+	}
     
     /** Return a view of this page before it was modified
         -- used by recovery */
@@ -103,7 +102,10 @@ public class HeapPage implements Page {
      */
     public HeapPageId getId() {
     // some code goes here
-    throw new UnsupportedOperationException("implement this");
+	if(pid!=null)
+	return pid;
+	else
+    throw new UnsupportedOperationException("Error in getting Id");
     }
 
     /**
@@ -112,12 +114,12 @@ public class HeapPage implements Page {
     private Tuple readNextTuple(DataInputStream dis, int slotId) throws NoSuchElementException {
         // if associated bit is not set, read forward to the next tuple, and
         // return null.
-        if (!isSlotUsed(slotId)) {
+        	if (!isSlotUsed(slotId)) {
             for (int i=0; i<td.getSize(); i++) {
                 try {
                     dis.readByte();
                 } catch (IOException e) {
-                    throw new NoSuchElementException("error reading empty tuple");
+                    throw new NoSuchElementException("Error reading empty tuple");
                 }
             }
             return null;
@@ -273,16 +275,23 @@ public class HeapPage implements Page {
      */
     public int getNumEmptySlots() {
         // some code goes here
-        return 0;
+        int count = 0; 
+        for (int i = 0; i< this.getNumTuples(); i++) 
+	{
+            if (!this.isSlotUsed(i))
+	     count++;
+        }
+	return count;
     }
 
     /**
      * Returns true if associated slot on this page is filled.
      */
     public boolean isSlotUsed(int i) {
-        // some code goes here
-        return false;
-    }
+        	int headerBit = i % 8; 
+		int headerByte = (i - headerBit) / 8; // difference is known as the byte number
+		return (m_header[headerByte] & (1 << headerBit)) != 0;
+	}
 
     /**
      * Abstraction to fill or clear a slot on this page.

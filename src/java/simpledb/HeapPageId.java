@@ -10,14 +10,16 @@ public class HeapPageId implements PageId {
      * @param tableId The table that is being referenced
      * @param pgNo The page number in that table.
      */
+	private int table_Id;
+	private int pageno;
     public HeapPageId(int tableId, int pgNo) {
-        // some code goes here
+        this.table_Id = tableId;
+	this.pageno = pgNo;
     }
 
     /** @return the table associated with this PageId */
     public int getTableId() {
-        // some code goes here
-        return 0;
+        return table_Id;
     }
 
     /**
@@ -25,8 +27,7 @@ public class HeapPageId implements PageId {
      *   this PageId
      */
     public int pageNumber() {
-        // some code goes here
-        return 0;
+           return pageno;
     }
 
     /**
@@ -36,8 +37,12 @@ public class HeapPageId implements PageId {
      * @see BufferPool
      */
     public int hashCode() {
-        // some code goes here
-        throw new UnsupportedOperationException("implement this");
+        int ans  = 0;
+	ans = Integer.parseInt(Integer.toString(table_Id).concat(Integer.toString(pageno)));
+	if(ans!=0)
+	return ans;
+	else
+        throw new UnsupportedOperationException("Error in getting hash Code.");
     }
 
     /**
@@ -49,7 +54,13 @@ public class HeapPageId implements PageId {
      */
     public boolean equals(Object o) {
         // some code goes here
-        return false;
+	if(o!=null && o instanceof PageId )
+	{	
+		PageId pid = (PageId) o;
+		if((pid.getTableId()==this.getTableId())&&(pid.pageNumber()==this.pageNumber()))
+		return true;
+	}        
+	return false;
     }
 
     /**
