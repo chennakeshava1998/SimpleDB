@@ -1,5 +1,5 @@
 package simpledb;
-
+	
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -51,7 +51,7 @@ class Table
     /**
      * Add a new table to the catalog.
      * This table's contents are stored in the specified DbFile.
-     * @param file the contents of the table to add;  file.getId() is the identfier of
+     * @param file the contents of the table to add;  file.getId() is the identifier of
      *    this file/tupledesc param for the calls getTupleDesc and getFile
      * @param name the name of the table -- may be an empty string.  May not be null.  If a name
      * @param pkeyField the name of the primary key field
@@ -74,7 +74,7 @@ class Table
      * Add a new table to the catalog.
      * This table has tuples formatted using the specified TupleDesc and its
      * contents are stored in the specified DbFile.
-     * @param file the contents of the table to add;  file.getId() is the identfier of
+     * @param file the contents of the table to add;  file.getId() is the identifier of
      *    this file/tupledesc param for the calls getTupleDesc and getFile
      */
     public void addTable(DbFile file) {

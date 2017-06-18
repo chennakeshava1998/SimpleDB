@@ -1,6 +1,7 @@
 package simpledb;
 
 import java.io.*;
+import java.util.HashMap;
 
 /**
  * BufferPool manages the reading and writing of pages into memory from
@@ -19,14 +20,18 @@ public class BufferPool {
     other classes. BufferPool should use the numPages argument to the
     constructor instead. */
     public static final int DEFAULT_PAGES = 50;
-
+	private HashMap<PageId, Page> map_cache;
+	private int Max_NumPages;
+	
     /**
      * Creates a BufferPool that caches up to numPages pages.
      *
      * @param numPages maximum number of pages in this buffer pool.
      */
-    public BufferPool(int numPages) {
-        // some code goes here
+    public BufferPool(int numPages) 
+    {
+         Max_NumPages = numPages;
+         map_cache = new HashMap<PageId, Page>();        
     }
 
     /**
@@ -44,12 +49,31 @@ public class BufferPool {
      * @param pid the ID of the requested page
      * @param perm the requested permissions on the page
      */
-    public  Page getPage(TransactionId tid, PageId pid, Permissions perm)
-        throws TransactionAbortedException, DbException {
-        // some code goes here
-        return null;
-    }
-
+    public  Page getPage(TransactionId tid, PageId pid, Permissions perm) throws TransactionAbortedException, DbException 
+	{
+	    	if (map_cache.containsKey(pid)) 
+		{
+	    		return map_cache.get(pid);
+	    	}
+    		else 
+		{	
+			if (map_cache.size() >= Max_NumPages) {
+				
+			throw new DbException("Maximum Numer of pages ( " + Max_NumPages +") has been exceeded.");
+				
+			}
+			DbFile file = Database.getCatalog().getDbFile(pid.getTableId());
+			Page new_Page = file.readPage(pid);
+			map_cache.put(pid, new_Page);
+			return new_Page;
+	    	}
+    		
+        // return null;
+	}
+	
+	public static int getPageSize() {
+      	return PAGE_SIZE;
+	}
     /**
      * Releases the lock on a page.
      * Calling this is very risky, and may result in wrong behavior. Think hard
