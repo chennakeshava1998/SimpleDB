@@ -65,8 +65,12 @@ public class HeapPage implements Page {
         @return the number of tuples on this page
     */
     private int getNumTuples() {        
-        // some code goes here
-        return 0;
+        int numTuples = 0;
+	// counting only the slots which are filled.
+	for(int i=0;i<header.length;i++){
+		if(header[i]==1) numTuples++;
+	}
+        return numTuples;
 
     }
 
@@ -75,10 +79,7 @@ public class HeapPage implements Page {
      * @return the number of bytes in the header of a page in a HeapFile with each tuple occupying tupleSize bytes
      */
     private int getHeaderSize() {        
-        
-        // some code goes here
-        return 0;
-                 
+        return header.length;           
     }
     
     /** Return a view of this page before it was modified
@@ -272,16 +273,19 @@ public class HeapPage implements Page {
      * Returns the number of empty slots on this page.
      */
     public int getNumEmptySlots() {
-        // some code goes here
-        return 0;
+	int numEmptySlots = 0;        
+	for(int i=0;i<header.length;i++){
+		if(header[i]==0) 
+			numEmptySlots++;
+	}
+        return numEmptySlots;
     }
 
     /**
      * Returns true if associated slot on this page is filled.
      */
     public boolean isSlotUsed(int i) {
-        // some code goes here
-        return false;
+        return header[i];
     }
 
     /**
@@ -297,8 +301,25 @@ public class HeapPage implements Page {
      * (note that this iterator shouldn't return tuples in empty slots!)
      */
     public Iterator<Tuple> iterator() {
-        // some code goes here
-        return null;
+        Iterator itr = tuples.iterator();
+	int i = 0;//to keep track of header array
+	Tuple tuple;
+	while(itr.hasNext()){
+		if(header[i]==0){
+			i++;
+			itr++;
+			//tuple = itr.next();
+		}
+		else
+		{
+			tuple = itr.next();
+			i++;
+			//printing out the elements of the tuple using toString() function in tuple class
+			tuple.toString();
+		}
+	}
+
+        return itr;
     }
 
 }
